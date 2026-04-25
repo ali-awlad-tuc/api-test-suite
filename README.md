@@ -85,7 +85,7 @@ api-test-suite/
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/aliawlad/api-test-suite.git
+git clone https://github.com/ali-awlad-tuc/api-test-suite.git
 cd api-test-suite
 ```
 
