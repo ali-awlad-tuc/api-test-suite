@@ -1,0 +1,669 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+		"name": "JSONPlaceholder API Test Suite",
+		"description": "REST API test collection mirroring 15 pytest test cases.\nCovers /posts, /users and /comments endpoints.\nAuthor: Md Ali Awlad | QA Engineer Portfolio Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://jsonplaceholder.typicode.com",
+			"type": "string"
+		},
+		{
+			"key": "valid_post_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "valid_user_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "valid_comment_id",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "invalid_id",
+			"value": "9999",
+			"type": "string"
+		}
+	],
+	"item": [
+
+		{
+			"name": "POSTS",
+			"item": [
+
+				{
+					"name": "TC-P01 | GET all posts – Status 200 [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-P01: GET /posts",
+									"// Expected: Status 200, response is a non-empty list",
+									"",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is a non-empty array', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data.length).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test('Response time is below 2000ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});",
+									"",
+									"pm.test('Content-Type is application/json', function () {",
+									"    pm.response.to.have.header('Content-Type');",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/posts",
+							"host": ["{{base_url}}"],
+							"path": ["posts"]
+						},
+						"description": "Retrieve all posts. Expected: 200 OK, array of 100 posts."
+					}
+				},
+
+				{
+					"name": "TC-P02 | GET single post by ID – Correct data [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-P02: GET /posts/1",
+									"// Expected: Status 200, correct ID returned, required fields present",
+									"",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Post ID matches requested ID', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data.id).to.eql(parseInt(pm.collectionVariables.get('valid_post_id')));",
+									"});",
+									"",
+									"pm.test('Post has required fields: title, body, userId', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.have.property('title').that.is.not.empty;",
+									"    pm.expect(data).to.have.property('body').that.is.not.empty;",
+									"    pm.expect(data).to.have.property('userId');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/posts/{{valid_post_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["posts", "{{valid_post_id}}"]
+						},
+						"description": "Retrieve a single post by ID. Expected: 200 OK, correct post returned."
+					}
+				},
+
+				{
+					"name": "TC-P03 | GET non-existent post – Status 404 [Negative]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-P03: GET /posts/9999",
+									"// Expected: Status 404 – post does not exist",
+									"",
+									"pm.test('Status code is 404 for invalid post ID', function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/posts/{{invalid_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["posts", "{{invalid_id}}"]
+						},
+						"description": "Request a post that does not exist. Expected: 404 Not Found."
+					}
+				},
+
+				{
+					"name": "TC-P04 | POST create new post – Status 201 [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-P04: POST /posts",
+									"// Expected: Status 201, response reflects sent payload, new ID assigned",
+									"",
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response contains sent title and body', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data.title).to.eql('Test Post Title');",
+									"    pm.expect(data.body).to.eql('This is the body of the test post.');",
+									"    pm.expect(data.userId).to.eql(1);",
+									"});",
+									"",
+									"pm.test('Response contains a new numeric ID', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data.id).to.be.a('number');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Test Post Title\",\n  \"body\": \"This is the body of the test post.\",\n  \"userId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/posts",
+							"host": ["{{base_url}}"],
+							"path": ["posts"]
+						},
+						"description": "Create a new post. Expected: 201 Created, response mirrors payload."
+					}
+				},
+
+				{
+					"name": "TC-P05 | PUT update post – Status 200 [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-P05: PUT /posts/1",
+									"// Expected: Status 200, updated fields reflected in response",
+									"",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response reflects updated title and body', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data.title).to.eql('Updated Title');",
+									"    pm.expect(data.body).to.eql('Updated body content.');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": 1,\n  \"title\": \"Updated Title\",\n  \"body\": \"Updated body content.\",\n  \"userId\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/posts/{{valid_post_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["posts", "{{valid_post_id}}"]
+						},
+						"description": "Update an existing post. Expected: 200 OK, updated data reflected."
+					}
+				},
+
+				{
+					"name": "TC-P06 | DELETE post – Status 200 [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-P06: DELETE /posts/1",
+									"// Expected: Status 200, empty object returned",
+									"",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response body is empty object after delete', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.eql({});",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"url": {
+							"raw": "{{base_url}}/posts/{{valid_post_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["posts", "{{valid_post_id}}"]
+						},
+						"description": "Delete a post. Expected: 200 OK, empty object response."
+					}
+				}
+
+			]
+		},
+
+		{
+			"name": "USERS",
+			"item": [
+
+				{
+					"name": "TC-U01 | GET all users – Status 200 [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-U01: GET /users",
+									"// Expected: Status 200, list of exactly 10 users",
+									"",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response contains exactly 10 users', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data.length).to.eql(10);",
+									"});",
+									"",
+									"pm.test('Response time is below 2000ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": ["{{base_url}}"],
+							"path": ["users"]
+						},
+						"description": "Retrieve all users. Expected: 200 OK, array of 10 users."
+					}
+				},
+
+				{
+					"name": "TC-U02 | GET single user – Valid email format [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-U02: GET /users/1",
+									"// Expected: Status 200, valid email format, required fields present",
+									"",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('User has required fields: name, username, email, address', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.have.property('name').that.is.not.empty;",
+									"    pm.expect(data).to.have.property('username').that.is.not.empty;",
+									"    pm.expect(data).to.have.property('email');",
+									"    pm.expect(data).to.have.property('address');",
+									"});",
+									"",
+									"pm.test('Email has valid format', function () {",
+									"    var data = pm.response.json();",
+									"    var emailRegex = /^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$/;",
+									"    pm.expect(emailRegex.test(data.email)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/users/{{valid_user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{valid_user_id}}"]
+						},
+						"description": "Retrieve a single user. Expected: 200 OK, valid email format."
+					}
+				},
+
+				{
+					"name": "TC-U03 | GET non-existent user – Status 404 [Negative]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-U03: GET /users/9999",
+									"// Expected: Status 404 – user does not exist",
+									"",
+									"pm.test('Status code is 404 for invalid user ID', function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/users/{{invalid_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{invalid_id}}"]
+						},
+						"description": "Request a user that does not exist. Expected: 404 Not Found."
+					}
+				},
+
+				{
+					"name": "TC-U04 | POST create new user – Status 201 [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-U04: POST /users",
+									"// Expected: Status 201, response reflects sent payload",
+									"",
+									"pm.test('Status code is 201', function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test('Response contains sent name and email', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data.name).to.eql('Ali Awlad');",
+									"    pm.expect(data.email).to.eql('ali.awlad.tuc@gmail.com');",
+									"});",
+									"",
+									"pm.test('Response contains a new ID', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.have.property('id');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Ali Awlad\",\n  \"username\": \"aliawlad\",\n  \"email\": \"ali.awlad.tuc@gmail.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": ["{{base_url}}"],
+							"path": ["users"]
+						},
+						"description": "Create a new user. Expected: 201 Created, response mirrors payload."
+					}
+				},
+
+				{
+					"name": "TC-U05 | GET posts by user – All belong to correct userId [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-U05: GET /users/1/posts",
+									"// Expected: Status 200, all posts belong to userId 1",
+									"",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is a non-empty list of posts', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data.length).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test('All posts belong to the correct userId', function () {",
+									"    var data = pm.response.json();",
+									"    var userId = parseInt(pm.collectionVariables.get('valid_user_id'));",
+									"    data.forEach(function(post) {",
+									"        pm.expect(post.userId).to.eql(userId);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/users/{{valid_user_id}}/posts",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{valid_user_id}}", "posts"]
+						},
+						"description": "Retrieve posts by user. Expected: 200 OK, all posts match userId."
+					}
+				}
+
+			]
+		},
+
+		{
+			"name": "COMMENTS",
+			"item": [
+
+				{
+					"name": "TC-C01 | GET all comments – Status 200 [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-C01: GET /comments",
+									"// Expected: Status 200, non-empty list",
+									"",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is a non-empty array', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data.length).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test('Response time is below 2000ms', function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/comments",
+							"host": ["{{base_url}}"],
+							"path": ["comments"]
+						},
+						"description": "Retrieve all comments. Expected: 200 OK, non-empty array."
+					}
+				},
+
+				{
+					"name": "TC-C02 | GET comments by postId – All match postId [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-C02: GET /comments?postId=1",
+									"// Expected: Status 200, all comments belong to postId 1",
+									"",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Response is a non-empty list', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.be.an('array');",
+									"    pm.expect(data.length).to.be.greaterThan(0);",
+									"});",
+									"",
+									"pm.test('All comments belong to the correct postId', function () {",
+									"    var data = pm.response.json();",
+									"    var postId = parseInt(pm.collectionVariables.get('valid_post_id'));",
+									"    data.forEach(function(comment) {",
+									"        pm.expect(comment.postId).to.eql(postId);",
+									"    });",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/comments?postId={{valid_post_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["comments"],
+							"query": [
+								{
+									"key": "postId",
+									"value": "{{valid_post_id}}"
+								}
+							]
+						},
+						"description": "Filter comments by postId. Expected: 200 OK, all match postId."
+					}
+				},
+
+				{
+					"name": "TC-C03 | GET non-existent comment – Status 404 [Negative]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-C03: GET /comments/9999",
+									"// Expected: Status 404 – comment does not exist",
+									"",
+									"pm.test('Status code is 404 for invalid comment ID', function () {",
+									"    pm.response.to.have.status(404);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/comments/{{invalid_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["comments", "{{invalid_id}}"]
+						},
+						"description": "Request a comment that does not exist. Expected: 404 Not Found."
+					}
+				},
+
+				{
+					"name": "TC-C04 | GET comment – Valid email format [Positive]",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// TC-C04: GET /comments/1",
+									"// Expected: Status 200, all required fields present, email valid",
+									"",
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test('Comment has required fields: postId, id, name, body, email', function () {",
+									"    var data = pm.response.json();",
+									"    pm.expect(data).to.have.property('postId');",
+									"    pm.expect(data).to.have.property('id');",
+									"    pm.expect(data).to.have.property('name').that.is.not.empty;",
+									"    pm.expect(data).to.have.property('body').that.is.not.empty;",
+									"    pm.expect(data).to.have.property('email');",
+									"});",
+									"",
+									"pm.test('Comment email has valid format', function () {",
+									"    var data = pm.response.json();",
+									"    var emailRegex = /^[\\w\\.-]+@[\\w\\.-]+\\.\\w+$/;",
+									"    pm.expect(emailRegex.test(data.email)).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{base_url}}/comments/{{valid_comment_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["comments", "{{valid_comment_id}}"]
+						},
+						"description": "Retrieve a single comment. Expected: 200 OK, valid email format."
+					}
+				}
+
+			]
+		}
+
+	]
+}
