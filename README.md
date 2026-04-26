@@ -1,3 +1,5 @@
+![API Tests](https://github.com/ali-awlad-tuc/api-test-suite/actions/workflows/tests.yml/badge.svg)
+
 # REST API Test Suite – Python & Postman
 
 Automated API test suite for the [JSONPlaceholder](https://jsonplaceholder.typicode.com) REST API,  
