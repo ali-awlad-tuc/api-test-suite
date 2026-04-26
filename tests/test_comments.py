@@ -99,3 +99,8 @@ def test_comment_email_format_is_valid(base_url, valid_comment_id):
     assert re.match(email_pattern, data["email"]), (
         f"Invalid email format in comment: {data['email']}"
     )
+
+def test_get_comment_with_invalid_string_id(base_url):
+    """Negative test: GET comment with invalid string ID should return 404."""
+    response = requests.get(f"{base_url}/comments/invalid-id")
+    assert response.status_code == 404

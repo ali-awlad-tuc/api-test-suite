@@ -155,3 +155,8 @@ def test_delete_post_returns_200(base_url, valid_post_id):
     assert data == {}, (
         f"Expected empty object after delete, got {data}"
     )
+
+def test_get_post_with_invalid_string_id(base_url):
+    """Negative test: GET post with invalid string ID should return 404."""
+    response = requests.get(f"{base_url}/posts/invalid-id")
+    assert response.status_code == 404

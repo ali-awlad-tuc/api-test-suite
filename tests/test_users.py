@@ -124,3 +124,8 @@ def test_get_posts_by_user_not_empty(base_url, valid_user_id):
         assert post["userId"] == valid_user_id, (
             f"Post userId {post['userId']} does not match expected userId {valid_user_id}"
         )
+
+def test_get_user_with_invalid_string_id(base_url):
+    """Negative test: GET user with invalid string ID should return 404."""
+    response = requests.get(f"{base_url}/users/invalid-id")
+    assert response.status_code == 404
