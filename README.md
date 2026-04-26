@@ -159,6 +159,12 @@ tests/test_users.py::test_get_user_with_invalid_string_id                PASSED
 
 ---
 
+## 📊 Test Report
+
+![Test Report](images/test_report.png)
+
+---
+
 ## ⚙️ Continuous Integration
 
 Tests run automatically on every push using **GitHub Actions**.
