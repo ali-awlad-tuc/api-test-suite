@@ -52,7 +52,7 @@ def new_post_payload():
 def new_user_payload():
     """Sample payload for creating a new user."""
     return {
-        "name": "Ali Awlad",
-        "username": "aliawlad",
+        "name": "Test User",
+        "username": "testuser",
         "email": "testuser@example.com"
     }
