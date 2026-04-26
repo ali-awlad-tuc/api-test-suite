@@ -54,5 +54,5 @@ def new_user_payload():
     return {
         "name": "Ali Awlad",
         "username": "aliawlad",
-        "email": "ali.awlad.tuc@gmail.com"
+        "email": "testuser@example.com"
     }
