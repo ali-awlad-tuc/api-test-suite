@@ -191,5 +191,5 @@ The Postman collection mirrors the API test scenarios.
 ## 👤 Author
 
 **Md Ali Awlad**
-Technische Universität Chemnitz
+· Technische Universität Chemnitz · 
 [LinkedIn](https://www.linkedin.com/in/aliawlad) · Chemnitz, Deutschland
